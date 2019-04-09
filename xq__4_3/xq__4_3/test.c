@@ -8,11 +8,17 @@
 
 int main1()
 {
-	int n;
-	int arr[20] = { 0 };
-	int i;
-
-
+	int n = 0;
+	scanf("%d", &n);
+	int arr[] = { '0','1','2' };
+	switch(n){
+	case 1:
+		printf("%c\n", arr[0]);
+		break;
+	default:
+		printf("%d", 99);
+	}
+	
 	system("pause");
 	return 0;
 }
