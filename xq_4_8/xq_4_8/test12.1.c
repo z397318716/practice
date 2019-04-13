@@ -6,9 +6,24 @@
 #include<stdio.h>
 #include<stdlib.h>
 
+unsigned int reserve_bit(unsigned int value){
+	unsigned int a = 0;
+	unsigned int b = 0;
+	
+	// 1 1001
+	// 1 0011
+	for (unsigned int i=0; i < 32; ++i){
+		
+		a = value & 1;
+		value = value >> 1;
+		b = b << 1;
+		b = b | a;
 
-
-unsigned int reverse_bit(unsigned int value){
+	}
+	
+	return b;
+}
+unsigned int Print_reverse_bit(unsigned int value){
 	
 	int a = 0;
 	while (1){
@@ -19,20 +34,23 @@ unsigned int reverse_bit(unsigned int value){
 		else{
 			a = value % 2;
 			value = value / 2;
-			printf("%d ", a);	
+			printf("%d", a);	
 		}
 	}
-
+	printf("\n");
 	return 0;
 }
 
 int main(){
 
-	int num = 0;
+	unsigned int num = 0;
 	printf("输入一个数:\n");
-	scanf("%d", &num);
-	reverse_bit(num);
+	scanf("%u", &num);
 
+
+	reserve_bit(num);
+	printf("%u\n",reserve_bit(num));
+	Print_reverse_bit(reserve_bit(num));
 
 	system("pause");
 	return 0;
