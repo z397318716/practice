@@ -6,7 +6,7 @@
 #include "BTree.h"
 
 #define N 10
-typedef int LTDataType;
+typedef BTNode* LTDataType;
 /*
 //定长的静态栈结构
 typedef struct Stack
@@ -19,7 +19,7 @@ int _top;
 //支持动态增长的栈结构
 typedef struct Stack
 {
-	int* _arr;
+	LTDataType* _arr;
 	int _top;
 	int _capacity;
 }Stack;

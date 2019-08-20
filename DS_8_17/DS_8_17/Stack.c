@@ -4,9 +4,10 @@
 void StackInit(Stack* ps)
 {
 	assert(ps);
+	ps->_capacity = 5;
 	ps->_arr = (LTDataType*)malloc(sizeof(LTDataType));
 	assert(ps->_arr);
-	ps->_capacity = 3;
+	
 	ps->_top = 0;
 }
 //栈的销毁
@@ -15,8 +16,8 @@ void StackDestory(Stack* ps)
 	assert(ps);
 	if (ps->_arr)
 	{
-		//free(ps->_arr);
-		
+		free(ps->_arr);
+		ps->_arr = NULL;
 		ps->_capacity = 0;
 		ps->_top = 0;
 		
@@ -29,21 +30,9 @@ void StackCheckCapacity(Stack* ps)
 	if (ps->_top == ps->_capacity)
 	{
 		//开辟新空间
-		int NewCapacity = ps->_capacity * 2;
-		LTDataType* tmp = (LTDataType*)malloc(sizeof(NewCapacity));
-		//assert(tmp);
-		if (tmp == NULL)
-		{
-			assert(0);
-			return;
-		}
-		for (int i = 0; i < ps->_top; i++)
-		{
-			tmp[i] = ps->_arr[i];
-		}
-		//free(ps->_arr);
-		ps->_arr = tmp;
-		ps->_capacity = NewCapacity;
+		ps->_capacity = ps->_capacity * 2;
+		ps->_arr = (LTDataType*)realloc(ps->_arr,ps->_capacity * sizeof(ps->_capacity));
+		
 	}
 }
 int StackSize(Stack* ps)
@@ -54,18 +43,14 @@ int StackSize(Stack* ps)
 int StackEmpty(Stack* ps)
 {
 	assert(ps);
-	if (ps->_top == 0)
-		return (LTDataType)0;
-	else
-		return 0;
-	//return ps->_top == 0;
+	return ps->_top == 0;
 }
 
 void StackPush(Stack* ps, LTDataType data)
 {
 	assert(ps);
 	StackCheckCapacity(ps);
-	ps->_arr[ps->_top + 1] = data;
+	ps->_arr[ps->_top] = data;
 	ps->_top++;
 	//ps->_arr[ps->_top++] = data;
 }

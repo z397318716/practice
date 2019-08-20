@@ -7,7 +7,9 @@
 
 void TestBinaryTree()
 {
-	BTNode* root = BinaryTreeCreate("ABD#GI##J###CE#HK###F##");
+	BTNode* root = BinaryTreeCreateExe("ABD#GI##J###CE#HK###F##");
+	BTNode* root1 = BinaryTreeCreateExe("ABDH##I##E##CF##G##");
+	BTNode* root2 = BinaryTreeCreateExe("ABD##E#H##CF##G##");
 
 	BinaryTreePrevOrder(root);
 	printf("\n");
@@ -20,6 +22,18 @@ void TestBinaryTree()
 	printf("该树有%d个结点\n", BinaryTreeSize(root));
 	printf("叶子结点有%d个\n", BinaryTreeLeafSize(root));
 
+	
+	BinaryTreeInOrderNonR(root);		//中序遍历 非递归
+	putchar('\n');
+	BinaryTreePostOrderNonR(root);		//后序遍历 非递归
+	putchar('\n');
+
+	printf("%d\n",BinaryTreeComplete(root));
+	//putchar('\n');
+	printf("%d\n",BinaryTreeComplete(root1));
+	//putchar('\n');
+
+	printf("%d\n", BinaryTreeLevelKSize(root2, 3));
 	//BinaryTreeDestory(root);
 }
 void TestQueue()

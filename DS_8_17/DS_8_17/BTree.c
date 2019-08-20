@@ -2,10 +2,12 @@
 #include "Queue.h"
 #include "Stack.h"
 
+static int s_n;
 //BTNode* BinaryTreeCreate(BTDataType* src, int n ,int* pi)		//传参实现较为复杂
 BTNode* BinaryTreeCreate(BTDataType* src)
 {
-	static int s_n = 0;						//避免传参(复杂)
+	//一次创建多颗树,该参数 未置 0 会出错
+	//static int s_n = 0;						//避免传参(复杂)
 	if (src[s_n] == '#')
 	{
 		s_n++;
@@ -20,7 +22,13 @@ BTNode* BinaryTreeCreate(BTDataType* src)
 
 	return cur;
 }
-//用传参方法递归实现 前序遍历 实现 堆还原
+BTNode* BinaryTreeCreateExe(BTDataType* src)
+{
+	s_n = 0;
+	return BinaryTreeCreate(src);
+}
+
+//用传参方法 递归 实现 前序遍历 实现 堆还原
 BTNode* BinaryTreeCreate1(BTDataType* src, int n, int* pi)
 {
 	if (src[*pi] != '#')
@@ -99,7 +107,53 @@ int BinaryTreeLeafSize(BTNode* root)
 	}
 	return leaf_num;
 }
-int BinaryTreeLevelKSize(BTNode* root, int k);
+
+
+// 1. 层序遍历法,无论是否有左右孩子都入队列(没有孩子就向队列入 NULL) 保证二叉树是一颗完全二叉树,最后统计第 k 层 非空结点个数
+// 2. 递归 , 
+int BinaryTreeLevelKSize(BTNode* root, int k)
+{
+	//层序遍历法实现统计每层结点个数的统计
+	int count = 0;
+	int start = pow(2, k);
+	int end = pow(2, k + 1);
+	int n = 1;
+	Queue qu;
+	BTNode* cur = root;
+	QueueInit(&qu);
+	QueuePush(&qu, cur);
+	while (n < end)
+	{
+
+
+
+		cur = QueueFront(&qu);
+
+		if (cur->_left == NULL)
+		{
+			QueuePush(&qu, NULL);
+		} else
+		{
+			QueuePush(&qu, cur->_left);
+		}
+		if (cur->_right == NULL)
+		{
+			QueuePush(&qu, NULL);
+		} else
+		{
+			QueuePush(&qu, cur->_right);
+		}
+
+		if (n >= start && cur != NULL)
+			count++;
+
+		QueuePop(&qu);
+		n++;
+
+
+	}
+	return count;
+}
 BTNode* BinaryTreeFind(BTNode* root, BTDataType x);
 //-------------------------------------------------------------------------------------------------------*/
 // 递归实现 前 中 后序遍历 (具有 后入先出 的特性就用递归来做)
@@ -118,9 +172,9 @@ void BinaryTreeInOrder(BTNode* root)
 {
 	if (root)
 	{
-		BinaryTreePrevOrder(root->_left);
+		BinaryTreeInOrder(root->_left);
 		putchar(root->_data);
-		BinaryTreePrevOrder(root->_right);
+		BinaryTreeInOrder(root->_right);
 	}
 }
 // 后序遍历
@@ -160,7 +214,43 @@ void BinaryTreeLevelOrder(BTNode* root)
 
 
 // 判断二叉树是否是完全二叉树
-int BinaryTreeComplete(BTNode* root);
+// 在层序遍历基础上
+// 1. 遍历到某个结点有右孩子 没有左孩子,直接返回
+// 2. 某个结点 有左孩子 没有右孩子,之后所有结点都必须要为叶子,否则返回
+int BinaryTreeComplete(BTNode* root)
+{
+	Queue qu;
+	BTNode* cur;
+	int tag = 0;
+	QueueInit(&qu);
+	QueuePush(&qu, root);
+	while (!QueueIsEmpty(&qu))
+	{
+		cur = QueueFront(&qu);
+
+		putchar(cur->_data);
+		if (cur->_right && !cur->_left)
+			return 0;
+		if (tag && (cur->_left || cur->_right))
+		{
+			return 0;
+		}
+		if (cur->_left)
+		{
+			QueuePush(&qu, cur->_left);
+		}
+		if (cur->_right)
+		{
+			QueuePush(&qu, cur->_right);
+		}
+		else
+		{
+			tag = 1;
+		}
+		QueuePop(&qu);
+	}
+	return 1;
+}
 
 // 非递归遍历
 // 前序遍历 
@@ -168,8 +258,9 @@ void BinaryTreePrevOrderNonR(BTNode* root)
 {
 	Stack st;
 	BTNode* cur = root;
-	StackInit(&st, 100);
+	StackInit(&st);
 
+	// 当 左孩子 和栈都为空 跳出循环( cur为空 栈肯定为空,)
 	while (cur)
 	{
 		putchar(cur->_data);
@@ -191,6 +282,64 @@ void BinaryTreePrevOrderNonR(BTNode* root)
 
 	StackDestory(&st);
 }
-void BinaryTreeInOrderNonR(BTNode* root);
-void BinaryTreePostOrderNonR(BTNode* root);
+// 中序遍历 非递归
+// 1. 入栈->进左孩子结点->入栈->没有左孩子结点->打印栈顶数据->没有右孩子结点->取栈顶
+void BinaryTreeInOrderNonR(BTNode* root)
+{
+	BTNode* cur = root;
+	Stack st;
+	StackInit(&st);
+
+	while (cur || !(StackEmpty(&st)))
+	{
+		for (; cur; cur = cur->_left)
+		{
+			StackPush(&st, cur);
+		}
+		cur = StackTop(&st);
+		if (cur)
+		{
+
+			/*if (cur)
+			{
+			break;
+			}*/
+
+			putchar(cur->_data);
+			StackPop(&st);
+			cur = cur->_right;
+		}
+	}
+}
+// 后序遍历 非递归
+void BinaryTreePostOrderNonR(BTNode* root)
+{
+	char tag[1024];
+	BTNode* cur = root;
+	Stack st;
+	StackInit(&st);
+	
+	do{
+		for (; cur; cur = cur->_left)
+		{
+			StackPush(&st, cur);
+			tag[st._top - 1] = 0;
+		}
+		// 循环打印出栈
+		while (!StackEmpty(&st) && tag[st._top - 1])
+		{
+			cur = StackTop(&st);
+			putchar(cur->_data);
+			StackPop(&st);
+		}
+
+		if (!StackEmpty(&st))
+		{
+
+			cur = StackTop(&st);
+			tag[st._top - 1] = 1;
+			cur = cur->_right;
+		}
+	}while (!StackEmpty(&st));
+}
 void TestBinaryTree();

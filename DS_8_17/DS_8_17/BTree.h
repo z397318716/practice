@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
+#include <math.h>
 
 typedef char BTDataType;
 typedef struct BinaryTreeNode
