@@ -257,15 +257,16 @@ int BinaryTreeComplete(BTNode* root)
 void BinaryTreePrevOrderNonR(BTNode* root)
 {
 	Stack st;
-	BTNode* cur = root;
+	BTNode* cur = root;									// 从根开始
 	StackInit(&st);
 
 	// 当 左孩子 和栈都为空 跳出循环( cur为空 栈肯定为空,)
 	while (cur)
 	{
-		putchar(cur->_data);
+		putchar(cur->_data);							// 访问当前结点
 
-		if (cur->_right)
+		//如果有左孩子,就访问左孩子,如果有右孩子节点,就访问右孩子,否则取栈顶
+		if (cur->_right)								
 		{
 			StackPush(&st, cur->_right);
 		}
@@ -292,22 +293,22 @@ void BinaryTreeInOrderNonR(BTNode* root)
 
 	while (cur || !(StackEmpty(&st)))
 	{
-		for (; cur; cur = cur->_left)
+		for (; cur; cur = cur->_left)		// 将当前节点及 左孩子 入栈
 		{
 			StackPush(&st, cur);
 		}
-		cur = StackTop(&st);
-		if (cur)
+		cur = StackTop(&st);				// 取栈顶(1.如果右孩子为空,不进for循环,直接去栈顶 -> 左子树访问完毕
+											// 2.如果右孩子不为空,那么该结点没有左孩子结点	  -> 左子树为空
+											// 无论上述哪种情况,当前结点都会打印
+		if (cur)			// 该判断 可有可无 ( 当 该节点右孩子为空且栈为空时,下一次不会进入 while 循环)
 		{
-
 			/*if (cur)
 			{
 			break;
 			}*/
-
 			putchar(cur->_data);
 			StackPop(&st);
-			cur = cur->_right;
+			cur = cur->_right;				// 当结点的右孩子结点为空,如果栈为空,遍历结束
 		}
 	}
 }
@@ -320,26 +321,33 @@ void BinaryTreePostOrderNonR(BTNode* root)
 	StackInit(&st);
 	
 	do{
-		for (; cur; cur = cur->_left)
+		for (; cur; cur = cur->_left)					// 类似中序,将当前结点及其左孩子结点入栈
 		{
 			StackPush(&st, cur);
-			tag[st._top - 1] = 0;
+			tag[st._top - 1] = 0;						// 重置左子树访问标记 tag
 		}
 		// 循环打印出栈
-		while (!StackEmpty(&st) && tag[st._top - 1])
+		while (!StackEmpty(&st) && tag[st._top - 1])	//该判断条件 只在最后一次循环跳出时生效
 		{
+			// 后面 分两种情况
+			// 1. 当 cur 为空时, 上面的 for 不进,此条件成立
+			// 2. 当 cur 不为空,上面的 for 进,则此条件不成立
+			// 如果 判断到 当前的 tag 被置位(情况 1),那么在
 			cur = StackTop(&st);
 			putchar(cur->_data);
 			StackPop(&st);
 		}
 
-		if (!StackEmpty(&st))
+		if (!StackEmpty(&st))							// 此条件只在最后一次循环跳出时生效
 		{
 
 			cur = StackTop(&st);
+			// 1. 如果 上面的 while 进了,说明 左子树访问完毕
+			// 2. 如果 上面的 while 没进,说明 没有左子树
 			tag[st._top - 1] = 1;
 			cur = cur->_right;
+			// 左子树访问完毕后,访问右子树
 		}
-	}while (!StackEmpty(&st));
+	}while (!StackEmpty(&st));			// 由于后序遍历
 }
 void TestBinaryTree();
