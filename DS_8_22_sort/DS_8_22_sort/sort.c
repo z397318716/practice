@@ -1,4 +1,5 @@
 #include "sort.h"
+#include "Queue.h"
 
 
 // 插入排序(升序)
@@ -115,15 +116,20 @@ void QuickSort(int* src, int n)
 void DealQuickSort(int* src, int start, int end)
 {
 	int mid;
-	if (start < end)
+	if (start + 8 < end)
 	{
 		//mid = DoublePointWay1(src, start, end);
-		mid = DoublePointWay2(src, start, end);
+		//mid = DoublePointWay2(src, start, end);
 		//mid = HoleQuickSort(src, start, end);
+		mid = HoareWay(src, start, end);
 		
 		
 		DealQuickSort(src, start, mid - 1);
 		DealQuickSort(src, mid + 1, end);
+	}
+	else
+	{
+		InsertSort(src + start, end - start + 1);
 	}
 }
 // 双指针法实现快排 方法1:
@@ -197,7 +203,6 @@ int HoleQuickSort(int* src, int start, int end)
 
 	while (a < b)
 	{
-
 		while (a < b && src[a] <= tmp)		// 从起始位置向后遍历 遇到比基准值 大的元素 跳出遍历 将该元素放入坑中
 		{
 			a++;
@@ -212,3 +217,110 @@ int HoleQuickSort(int* src, int start, int end)
 	src[a] = tmp;	// 将所选取的 基准值 赋给他们的相遇点, 保证 tmp 左边都是比他小 右边都比他大
 	return a;		// 返回中间位置
 }
+/*****************************************
+	***选择排序***
+1. 在元素集合中选取最小(最大)元素,如果该元素不是数组首(尾)元素,则与数组首(尾)元素交换
+2. 接下来在剩余元素中重复该操作
+	** 不稳定的排序
+******************************************/
+void SelectSort(int* src, int n)
+{
+	int start = 0;
+	int end = n - 1;
+	int min = 0;			// 记录 最小元素下标
+	int i = 0;				// 记录每趟 比较起始元素下标
+	while (start <= end)
+	{
+		i = start;
+		min = i;
+		while (i <= end)
+		{
+			if (src[i] < src[min])
+			{
+				min = i;
+				SwapArgs(src + i,src + min);
+				//min = i;
+			}
+			i++;
+		}
+		SwapArgs(src + start,src + min);
+		start++;
+
+	}
+}
+
+int HoareWay(int*src, int start, int end)
+{
+	int a = start + 1;
+	int b = end - 2;
+	int mid = (start + end) / 2;
+	if (src[start] > src[mid])
+	{
+		SwapArgs(src + start, src + mid);
+	}
+	if (src[mid] > src[end])
+	{
+		SwapArgs(src + mid, src + end);
+	}
+	if (src[start] > src[mid])
+	{
+		SwapArgs(src + start, src + mid);
+	}
+
+	if (end - start <= 2)					//
+		return mid;
+	
+	
+	SwapArgs(src + mid, src + end - 1);
+	int tmp = src[end - 1];
+	
+	while (a < b)
+	{
+
+		while (a < b && src[a] <= tmp)
+		{
+			a++;
+		}
+		src[b] = src[a];
+		while (b > start && src[b] >= tmp)
+		{
+			b--;
+		}
+		src[a] = src[b];
+	}
+	src[a] = tmp;
+	return a;
+}
+
+// 非递归 快速排序(队列实现)
+void QuickSortNonR(int* src, int n)
+{
+	int start = 0, end = n - 1;
+	int mid;
+	Queue qu;
+	QueueInit(&qu);
+
+	QueuePush(&qu, 0);
+	QueuePush(&qu, n - 1);
+	while (!QueueIsEmpty(&qu))
+	{
+		start = QueueTop(&qu);
+		QueuePop(&qu);
+		end = QueueTop(&qu);
+		QueuePop(&qu);
+		mid = HoareWay(src, start, end);
+
+		if (start < end - 1)
+		{
+			QueuePush(&qu, start);
+			QueuePush(&qu, mid);
+		}
+		if (mid + 1 < end - 1)
+		{
+			QueuePush(&qu, mid + 1);
+			QueuePush(&qu, end);
+		}
+	}
+	QueueDestroy(&qu);
+}
+

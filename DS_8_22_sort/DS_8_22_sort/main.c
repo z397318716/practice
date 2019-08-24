@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include "sort.h"
+#include "Queue.h"
 
 // ´òÓ¡Êý×é
 void PrintArray(int* src,int n)
@@ -14,15 +15,19 @@ void PrintArray(int* src,int n)
 }
 
 
+
 int main()
 {
 
-#if 0
-	int src[15] = { 0, 5, 4, 7, 6, 8, 9, 0, 12, 2 , 2, 3, 4, 4, 2};
+#if 1
+	int src[] = { 0, 5, 4, 7, 6, 8, 9, 0, 12, 2 , 2, 3, 4, 4, 2};
+	int n = sizeof(src)/sizeof(src[0]);
 	//InsertSort(src, 10);
 
-	QuickSort(src,15);
-	PrintArray(src, 15);
+	//QuickSort(src,15);
+	//SelectSort(src,n);
+	QuickSortNonR(src, n);
+	PrintArray(src, n);
 
 #else
 	srand(time(NULL));
@@ -35,8 +40,10 @@ int main()
 	//InsertSort(src, BUFSIZE);
 	//ShellSort(src, BUFSIZE);
 	//MergeSort(src, BUFSIZE);
-	QuickSort(src, BUFSIZE);
+	//QuickSort(src, BUFSIZE);
 
+	//SelectSort(src, BUFSIZE);
+	QuickSortNonR(src, BUFSIZE);
 	PrintArray(src, BUFSIZE);
 #endif
 
